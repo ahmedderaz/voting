@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote-worker
+  namespace: default
+  labels:
+    app: vote-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vote-worker
+  template:
+    metadata:
+      labels:
+        app: vote-worker
+    spec:
+      containers:
+      - name: worker
+        image: dockersamples/visualizer:latest
+        ports:
+        - containerPort: 8080
+          name: worker-viz
+

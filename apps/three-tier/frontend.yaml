@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote-frontend
+  namespace: default
+  labels:
+    app: vote-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vote-frontend
+  template:
+    metadata:
+      labels:
+        app: vote-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: dockersamples/k8s-wordsmith-web:latest
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vote-frontend-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: vote-frontend
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vote-frontend-router
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(\`vote.local\`)
+      kind: Rule
+      services:
+        - name: vote-frontend-service
+          port: 80
+
